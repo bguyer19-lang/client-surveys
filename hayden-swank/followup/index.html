@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Hayden Swank — follow-up survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0e17;
+    --bg2: #121826;
+    --card: #1a2233;
+    --accent: #c41e3a;
+    --accent-hover: #e02845;
+    --text: #f5f5f5;
+    --muted: #9aa3b2;
+    --border: #2a3548;
+    --ok: #2ecc71;
+    --font-display: "Oswald", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; min-height: 100%;
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-body);
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(196,30,58,0.18), transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, rgba(26,34,51,0.9), transparent 50%),
+      var(--bg);
+  }
+  .wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    margin-bottom: 18px;
+  }
+  .eyebrow {
+    font-family: var(--font-display);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: var(--accent);
+    margin: 0 0 6px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(22px, 5vw, 28px);
+    letter-spacing: 0.02em;
+    margin: 0 0 4px;
+    text-transform: uppercase;
+  }
+  .sub { color: var(--muted); font-size: 14px; margin: 0; }
+  .progress {
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 16px 0 8px;
+  }
+  .progress > i {
+    display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--accent), #ff5a73);
+    transition: width 0.25s ease;
+  }
+  .progress-label {
+    font-size: 12px; color: var(--muted);
+    display: flex; justify-content: space-between;
+  }
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 18px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  }
+  .q-label {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 4.5vw, 24px);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    margin: 0 0 8px;
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+  .q-help { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+  .choices { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .choice {
+    appearance: none; border: 1px solid var(--border);
+    background: var(--card); color: var(--text);
+    border-radius: 12px; padding: 16px 16px;
+    font-size: 16px; font-weight: 600; text-align: left;
+    cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.05s;
+    font-family: var(--font-body); line-height: 1.3;
+    min-height: 52px;
+  }
+  .choice:hover { border-color: var(--accent); }
+  .choice:active { transform: scale(0.99); }
+  .choice.selected {
+    border-color: var(--accent);
+    background: rgba(196,30,58,0.18);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+  .choice .rank-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-size: 12px; font-weight: 700; margin-right: 10px;
+  }
+  .other-box { margin-top: 10px; display: none; }
+  .other-box.show { display: block; }
+  input[type="text"], input[type="email"], textarea {
+    width: 100%; padding: 14px 14px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--text); font-size: 16px; font-family: var(--font-body);
+  }
+  input:focus, textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  textarea { min-height: 96px; resize: vertical; }
+  .nav {
+    display: flex; gap: 10px; margin-top: 18px;
+  }
+  .btn {
+    flex: 1; border: none; border-radius: 12px;
+    padding: 15px 16px; font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: var(--font-body);
+    letter-spacing: 0.02em;
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-back {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); flex: 0 0 auto; min-width: 96px;
+  }
+  .btn-next, .btn-submit {
+    background: var(--accent); color: #fff;
+  }
+  .btn-next:hover:not(:disabled), .btn-submit:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  .btn-secondary {
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .summary { font-size: 14px; }
+  .summary-row {
+    display: flex; gap: 10px; padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-row .k { color: var(--muted); flex: 0 0 38%; font-size: 12px; }
+  .summary-row .v { flex: 1; font-weight: 600; word-break: break-word; }
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+    background: #16351f; color: var(--ok); border: 1px solid #2a6b3d;
+    padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    z-index: 50;
+  }
+  .toast.show { opacity: 1; }
+  .note {
+    font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.4;
+  }
+  .actions-col { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+  .hidden { display: none !important; }
+  .error { color: #ff7a8a; font-size: 13px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow" id="eyebrow">Producer intake</p>
+    <h1 id="title">Survey</h1>
+    <p class="sub" id="subtitle"></p>
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+    <div class="progress-label">
+      <span id="stepLabel">Question 1</span>
+      <span id="pctLabel">0%</span>
+    </div>
+  </header>
+
+  <section class="card" id="card">
+    <h2 class="q-label" id="qLabel"></h2>
+    <p class="q-help" id="qHelp"></p>
+    <div class="choices" id="choices"></div>
+    <div class="other-box" id="otherBox">
+      <input type="text" id="otherInput" placeholder="Type your answer" autocomplete="off" />
+    </div>
+    <div id="textBox" class="hidden" style="margin-top:4px">
+      <input type="text" id="textInput" placeholder="" autocomplete="off" />
+    </div>
+    <div id="emailBox" class="hidden" style="margin-top:4px">
+      <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email" />
+    </div>
+    <p class="error hidden" id="err"></p>
+    <div class="nav">
+      <button type="button" class="btn btn-back" id="backBtn">Back</button>
+      <button type="button" class="btn btn-next" id="nextBtn">Next</button>
+    </div>
+  </section>
+
+  <section class="card hidden" id="summaryCard">
+    <h2 class="q-label">Review your answers</h2>
+    <p class="q-help">Submit sends structured JSON back. Copy is always available.</p>
+    <div class="summary" id="summary"></div>
+    <div class="actions-col">
+      <button type="button" class="btn btn-submit" id="submitBtn">Submit answers</button>
+      <button type="button" class="btn btn-secondary" id="copyBtn">Copy answers</button>
+      <button type="button" class="btn btn-secondary" id="downloadBtn">Download JSON</button>
+      <button type="button" class="btn btn-back" id="editBtn">Edit answers</button>
+    </div>
+    <p class="note" id="returnNote"></p>
+  </section>
+</div>
+<div class="toast" id="toast">Copied</div>
+
+<!-- SURVEY_CONFIG: edit this JSON to reuse the template for another client -->
+<script id="survey-config" type="application/json">
+{
+  "clientSlug": "hayden-swank-followup",
+  "clientName": "Hayden Swank",
+  "botName": "Hayden Swank's Producer",
+  "returnEmail": "guyer@mail.grokbot.com",
+  "brand": {
+    "bg": "#0a0e17",
+    "bg2": "#121826",
+    "card": "#1a2233",
+    "accent": "#c41e3a",
+    "text": "#f5f5f5",
+    "muted": "#9aa3b2",
+    "fontDisplay": "Oswald",
+    "fontBody": "Inter"
+  },
+  "questions": [
+    {
+      "id": "jobs_rank",
+      "label": "Finish ranking the jobs to hand off",
+      "help": "Tap in order of priority (1 = most wanted). Include everything you still want help with \u2014 tap again to remove.",
+      "type": "rank",
+      "required": true,
+      "options": [
+        "Show prep / rundowns",
+        "Teleprompter / talking-point scripts in your voice",
+        "Lower thirds / graphics briefs",
+        "Clip selection from field footage",
+        "OBS / StreamYard scene guidance",
+        "Social promo drafts (X first)",
+        "Guest booking notes",
+        "AA network cross-promo ideas (drafts only)"
+      ]
+    },
+    {
+      "id": "budget",
+      "label": "Budget comfort (ranges only \u2014 no commitment)",
+      "help": "Informational only. Nothing is charged from this answer.",
+      "type": "single",
+      "required": true,
+      "options": [
+        "Exploring / $0 for now",
+        "Under $50 / mo",
+        "$50\u2013150 / mo",
+        "$150\u2013400 / mo",
+        "$400+ / mo",
+        "Prefer not to say"
+      ]
+    },
+    {
+      "id": "timeline",
+      "label": "When do you want a producer bot live?",
+      "type": "single",
+      "required": true,
+      "options": [
+        "ASAP",
+        "This month",
+        "Next 1\u20133 months",
+        "Just researching"
+      ],
+      "allowOther": true
+    },
+    {
+      "id": "sponsors_cta",
+      "label": "Anything the bot should know for CTAs?",
+      "help": "Sponsors, contribute links, or a hard no on money CTAs.",
+      "type": "single",
+      "required": true,
+      "options": [
+        "No sponsors yet",
+        "Network / AA contribute links only",
+        "Prefer bot never draft money CTAs"
+      ],
+      "allowOther": true
+    },
+    {
+      "id": "want_bot",
+      "label": "What do you want the bot to do?",
+      "help": "Yes queues finishing your producer. Nothing is emailed without Guyer's OK.",
+      "type": "single",
+      "required": true,
+      "options": [
+        "Yes \u2014 build Hayden Swank's Producer for me",
+        "Help with show prep + X promos first, then expand",
+        "Not yet"
+      ],
+      "allowOther": true
+    },
+    {
+      "id": "capture_notes",
+      "label": "Capture notes (optional)",
+      "help": "Capture cards, resolutions, field workflow \u2014 anything we cut off last time. Skip if none.",
+      "type": "text",
+      "required": false,
+      "placeholder": "Optional notes"
+    }
+  ]
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  function parseConfig() {
+    var el = document.getElementById("survey-config");
+    return JSON.parse(el.textContent);
+  }
+
+  var CONFIG = parseConfig();
+  var qs = CONFIG.questions || [];
+  var answers = {};
+  var idx = 0;
+  var mode = "question"; // question | summary
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function applyBrand() {
+    var b = CONFIG.brand || {};
+    var r = document.documentElement.style;
+    if (b.bg) r.setProperty("--bg", b.bg);
+    if (b.bg2) r.setProperty("--bg2", b.bg2);
+    if (b.card) r.setProperty("--card", b.card);
+    if (b.accent) r.setProperty("--accent", b.accent);
+    if (b.text) r.setProperty("--text", b.text);
+    if (b.muted) r.setProperty("--muted", b.muted);
+    if (b.fontDisplay) r.setProperty("--font-display", '"' + b.fontDisplay + '", system-ui, sans-serif');
+    if (b.fontBody) r.setProperty("--font-body", '"' + b.fontBody + '", system-ui, sans-serif');
+    document.title = (CONFIG.clientName || "Client") + " — Producer intake";
+    var isFollowup = String(CONFIG.clientSlug || "").indexOf("followup") >= 0;
+    $("eyebrow").textContent = (CONFIG.botName || "Producer") + (isFollowup ? " · follow-up" : " · intake");
+    $("title").textContent = (CONFIG.clientName || "Client") + (isFollowup ? " follow-up" : " survey");
+    $("subtitle").textContent = "One tap per answer. Takes a few minutes.";
+    var note = "";
+    if (CONFIG.returnEmail) {
+      note = "Submit opens a prefilled email to " + CONFIG.returnEmail +
+        " with subject SURVEY " + CONFIG.clientSlug +
+        " (compact answers). Full JSON also downloads/copies.";
+    } else {
+      note = "No return email is configured yet. Submit will download the JSON and copy it to your clipboard. Set returnEmail in the survey config when Producer Bot Builder's inbox is on.";
+    }
+    $("returnNote").textContent = note;
+  }
+
+  function progress() {
+    var n = qs.length;
+    var p = mode === "summary" ? 100 : Math.round((idx / Math.max(n, 1)) * 100);
+    $("bar").style.width = p + "%";
+    $("pctLabel").textContent = p + "%";
+    $("stepLabel").textContent = mode === "summary"
+      ? "Review"
+      : ("Question " + (idx + 1) + " of " + n);
+  }
+
+  function currentValue() {
+    return answers[qs[idx].id];
+  }
+
+  function setAnswer(val) {
+    answers[qs[idx].id] = val;
+  }
+
+  function clearErr() {
+    $("err").classList.add("hidden");
+    $("err").textContent = "";
+  }
+
+  function showErr(msg) {
+    $("err").textContent = msg;
+    $("err").classList.remove("hidden");
+  }
+
+  function isOtherSelected(q, val) {
+    if (!q.allowOther) return false;
+    if (q.type === "multi" || q.type === "rank") {
+      return Array.isArray(val) && val.some(function (v) {
+        return typeof v === "string" && v.indexOf("Other:") === 0;
+      });
+    }
+    return typeof val === "string" && (val === "Other" || val.indexOf("Other:") === 0);
+  }
+
+  function renderQuestion() {
+    mode = "question";
+    $("card").classList.remove("hidden");
+    $("summaryCard").classList.add("hidden");
+    clearErr();
+    var q = qs[idx];
+    $("qLabel").textContent = q.label;
+    $("qHelp").textContent = q.help || (
+      q.type === "multi" ? "Tap all that apply, then Next." :
+      q.type === "rank" ? "Tap in order of priority (1 = most wanted). Tap again to remove." :
+      q.type === "text" || q.type === "email" ? "" : "Tap one answer."
+    );
+
+    $("choices").innerHTML = "";
+    $("otherBox").classList.remove("show");
+    $("otherInput").value = "";
+    $("textBox").classList.add("hidden");
+    $("emailBox").classList.add("hidden");
+    $("textInput").value = "";
+    $("emailInput").value = "";
+
+    var val = currentValue();
+
+    if (q.type === "text") {
+      $("textBox").classList.remove("hidden");
+      $("textInput").placeholder = q.placeholder || "Type your answer";
+      $("textInput").value = val || "";
+    } else if (q.type === "email") {
+      $("emailBox").classList.remove("hidden");
+      $("emailInput").value = val || "";
+    } else if (q.type === "single" || q.type === "yesno") {
+      var opts = q.options || (q.type === "yesno" ? ["Yes", "No"] : []);
+      opts.forEach(function (opt) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "choice" + (val === opt ? " selected" : "");
+        btn.textContent = opt;
+        btn.addEventListener("click", function () {
+          setAnswer(opt);
+          renderQuestion();
+          if (!q.allowOther || opt !== "Other") {
+            // auto-advance on single (except Other)
+            setTimeout(function () { goNext(true); }, 120);
+          } else {
+            $("otherBox").classList.add("show");
+            $("otherInput").focus();
+          }
+        });
+        $("choices").appendChild(btn);
+      });
+      if (q.allowOther) {
+        var otherBtn = document.createElement("button");
+        otherBtn.type = "button";
+        otherBtn.className = "choice" + (isOtherSelected(q, val) ? " selected" : "");
+        otherBtn.textContent = "Other";
+        otherBtn.addEventListener("click", function () {
+          var existing = (typeof val === "string" && val.indexOf("Other:") === 0)
+            ? val.slice(7).trim() : "";
+          setAnswer("Other:" + (existing || ""));
+          renderQuestion();
+          $("otherBox").classList.add("show");
+          $("otherInput").value = existing;
+          $("otherInput").focus();
+        });
+        $("choices").appendChild(otherBtn);
+        if (isOtherSelected(q, val)) {
+          $("otherBox").classList.add("show");
+          $("otherInput").value = (val || "").replace(/^Other:\s*/, "");
+        }
+      }
+    } else if (q.type === "multi") {
+      var selected = Array.isArray(val) ? val.slice() : [];
+      (q.options || []).forEach(function (opt) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        var on = selected.indexOf(opt) >= 0;
+        btn.className = "choice" + (on ? " selected" : "");
+        btn.textContent = opt;
+        btn.addEventListener("click", function () {
+          var i = selected.indexOf(opt);
+          if (i >= 0) selected.splice(i, 1);
+          else selected.push(opt);
+          setAnswer(selected);
+          renderQuestion();
+        });
+        $("choices").appendChild(btn);
+      });
+      if (q.allowOther) {
+        var otherIdx = selected.findIndex(function (v) { return String(v).indexOf("Other:") === 0; });
+        var otherOn = otherIdx >= 0;
+        var ob = document.createElement("button");
+        ob.type = "button";
+        ob.className = "choice" + (otherOn ? " selected" : "");
+        ob.textContent = "Other";
+        ob.addEventListener("click", function () {
+          if (otherOn) {
+            selected.splice(otherIdx, 1);
+            setAnswer(selected);
+            renderQuestion();
+          } else {
+            selected.push("Other:");
+            setAnswer(selected);
+            renderQuestion();
+            $("otherBox").classList.add("show");
+            $("otherInput").focus();
+          }
+        });
+        $("choices").appendChild(ob);
+        if (otherOn) {
+          $("otherBox").classList.add("show");
+          $("otherInput").value = String(selected[otherIdx]).replace(/^Other:\s*/, "");
+        }
+      }
+    } else if (q.type === "rank") {
+      var ranked = Array.isArray(val) ? val.slice() : [];
+      (q.options || []).forEach(function (opt) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        var r = ranked.indexOf(opt);
+        btn.className = "choice" + (r >= 0 ? " selected" : "");
+        if (r >= 0) {
+          var badge = document.createElement("span");
+          badge.className = "rank-badge";
+          badge.textContent = String(r + 1);
+          btn.appendChild(badge);
+          btn.appendChild(document.createTextNode(opt));
+        } else {
+          btn.textContent = opt;
+        }
+        btn.addEventListener("click", function () {
+          var i = ranked.indexOf(opt);
+          if (i >= 0) ranked.splice(i, 1);
+          else ranked.push(opt);
+          setAnswer(ranked);
+          renderQuestion();
+        });
+        $("choices").appendChild(btn);
+      });
+    }
+
+    $("backBtn").disabled = idx === 0;
+    $("nextBtn").textContent = idx === qs.length - 1 ? "Review" : "Next";
+    progress();
+  }
+
+  function readTransientFields() {
+    var q = qs[idx];
+    if (!q) return;
+    if (q.type === "text") {
+      setAnswer(($("textInput").value || "").trim());
+    } else if (q.type === "email") {
+      setAnswer(($("emailInput").value || "").trim());
+    } else if (q.allowOther && $("otherBox").classList.contains("show")) {
+      var otherText = ($("otherInput").value || "").trim();
+      var cur = currentValue();
+      if (q.type === "multi") {
+        var arr = Array.isArray(cur) ? cur.slice() : [];
+        var oi = arr.findIndex(function (v) { return String(v).indexOf("Other:") === 0; });
+        if (oi >= 0) arr[oi] = "Other: " + otherText;
+        setAnswer(arr);
+      } else if (typeof cur === "string" && (cur === "Other" || cur.indexOf("Other:") === 0)) {
+        setAnswer("Other: " + otherText);
+      }
+    }
+  }
+
+  function validateCurrent() {
+    var q = qs[idx];
+    readTransientFields();
+    var val = currentValue();
+    if (!q.required) return true;
+    if (q.type === "email") {
+      if (!val) { showErr("Email is required."); return false; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { showErr("Enter a valid email."); return false; }
+      return true;
+    }
+    if (q.type === "text") {
+      if (!val) { showErr("Please enter an answer."); return false; }
+      return true;
+    }
+    if (q.type === "multi" || q.type === "rank") {
+      if (!Array.isArray(val) || val.length === 0) {
+        showErr(q.type === "rank" ? "Tap at least one priority." : "Pick at least one.");
+        return false;
+      }
+      if (q.allowOther) {
+        var bad = val.some(function (v) {
+          return String(v).indexOf("Other:") === 0 && String(v).replace(/^Other:\s*/, "") === "";
+        });
+        if (bad) { showErr("Fill in the Other field."); return false; }
+      }
+      return true;
+    }
+    if (val == null || val === "") { showErr("Pick an answer."); return false; }
+    if (typeof val === "string" && val.indexOf("Other:") === 0 && val.replace(/^Other:\s*/, "") === "") {
+      showErr("Fill in the Other field."); return false;
+    }
+    return true;
+  }
+
+  function goNext(fromAuto) {
+    if (!validateCurrent()) return;
+    if (idx < qs.length - 1) {
+      idx += 1;
+      renderQuestion();
+    } else {
+      showSummary();
+    }
+  }
+
+  function goBack() {
+    clearErr();
+    if (mode === "summary") {
+      idx = qs.length - 1;
+      renderQuestion();
+      return;
+    }
+    if (idx > 0) {
+      readTransientFields();
+      idx -= 1;
+      renderQuestion();
+    }
+  }
+
+  function labelFor(id) {
+    for (var i = 0; i < qs.length; i++) if (qs[i].id === id) return qs[i].label;
+    return id;
+  }
+
+  function formatVal(v) {
+    if (Array.isArray(v)) return v.join("; ");
+    if (v == null || v === "") return "—";
+    return String(v);
+  }
+
+  function showSummary() {
+    mode = "summary";
+    $("card").classList.add("hidden");
+    $("summaryCard").classList.remove("hidden");
+    var html = "";
+    qs.forEach(function (q) {
+      html += '<div class="summary-row"><div class="k">' + escapeHtml(q.label) +
+        '</div><div class="v">' + escapeHtml(formatVal(answers[q.id])) + "</div></div>";
+    });
+    $("summary").innerHTML = html;
+    progress();
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+
+  // Abbreviated keys for compact mailto bodies (keep full answers as values).
+  var KEY_ABBREV = {
+    display_name: "dn",
+    show_name: "sn",
+    email: "em",
+    email_ok: "eok",
+    city_region: "city",
+    timezone: "tz",
+    record_where: "rec",
+    software: "soft",
+    live_or_recorded: "lor",
+    camera: "cam",
+    capture_notes: "cap",
+    audio: "aud",
+    lighting: "lit",
+    os: "os",
+    machine_power: "mp",
+    platforms: "plat",
+    cadence: "cad",
+    team: "team",
+    time_sinks: "sink",
+    graphics: "gfx",
+    guests: "gst",
+    jobs_rank: "jobs",
+    budget: "bud",
+    timeline: "tl",
+    sponsors_cta: "cta",
+    want_bot: "want"
+  };
+
+  function formatCompactValue(v) {
+    if (v == null || v === "") return "";
+    if (Array.isArray(v)) {
+      return v.map(function (x) { return String(x).replace(/\|/g, "/").replace(/\n/g, " "); }).join(" | ");
+    }
+    return String(v).replace(/\r?\n/g, " ").trim();
+  }
+
+  function buildCompactBody() {
+    var lines = [];
+    lines.push("v=1");
+    lines.push("slug=" + (CONFIG.clientSlug || ""));
+    if (CONFIG.clientName) lines.push("name=" + CONFIG.clientName);
+    qs.forEach(function (q) {
+      var val = answers[q.id];
+      if (val == null || val === "" || (Array.isArray(val) && !val.length)) return;
+      var key = KEY_ABBREV[q.id] || q.id;
+      lines.push(key + "=" + formatCompactValue(val));
+    });
+    var body = lines.join("\n");
+    // Soft cap ~1500 chars for mailto body (many clients truncate around here).
+    if (body.length > 1500) {
+      var kept = [];
+      var n = 0;
+      for (var i = 0; i < lines.length; i++) {
+        var next = n ? n + 1 + lines[i].length : lines[i].length;
+        if (next > 1480 && i > 2) {
+          kept.push("_trunc=1");
+          break;
+        }
+        kept.push(lines[i]);
+        n = next;
+      }
+      body = kept.join("\n");
+    }
+    return body;
+  }
+
+  function buildPayload() {
+    var ordered = [];
+    qs.forEach(function (q) {
+      ordered.push({ id: q.id, label: q.label, value: answers[q.id] == null ? null : answers[q.id] });
+    });
+    return {
+      schema: "producer-intake-survey/v1",
+      clientSlug: CONFIG.clientSlug,
+      clientName: CONFIG.clientName,
+      botName: CONFIG.botName,
+      submittedAt: new Date().toISOString(),
+      answers: answers,
+      ordered: ordered
+    };
+  }
+
+  function payloadText() {
+    return JSON.stringify(buildPayload(), null, 2);
+  }
+
+  function toast(msg) {
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function () { t.classList.remove("show"); }, 1800);
+  }
+
+  function downloadJson() {
+    var text = payloadText();
+    var blob = new Blob([text], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "SURVEY_" + (CONFIG.clientSlug || "client") + ".json";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }, 0);
+  }
+
+  function copyAnswers() {
+    var text = payloadText();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () {
+        toast("Answers copied");
+      }).catch(function () {
+        fallbackCopy(text);
+      });
+    }
+    fallbackCopy(text);
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      toast("Answers copied");
+    } catch (e) {
+      toast("Copy failed — use Download");
+    }
+    ta.remove();
+  }
+
+  function submit() {
+    var text = payloadText();
+    // Always persist full JSON locally (download + clipboard).
+    downloadJson();
+    copyAnswers();
+
+    if (CONFIG.returnEmail) {
+      var subject = "SURVEY " + CONFIG.clientSlug;
+      // Compact key=value body stays under mailto limits; full JSON is on clipboard/download.
+      var body = buildCompactBody();
+      var url = "mailto:" + encodeURIComponent(CONFIG.returnEmail).replace(/%40/g, "@") +
+        "?subject=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(body);
+      // Expose for length tests
+      window.__SURVEY_LAST_MAILTO__ = { url: url, body: body, bodyLen: body.length, urlLen: url.length };
+      window.location.href = url;
+      toast("Opening email…");
+    } else {
+      toast("Downloaded + copied");
+    }
+  }
+
+  $("nextBtn").addEventListener("click", function () { goNext(false); });
+  $("backBtn").addEventListener("click", goBack);
+  $("editBtn").addEventListener("click", goBack);
+  $("submitBtn").addEventListener("click", submit);
+  $("copyBtn").addEventListener("click", copyAnswers);
+  $("downloadBtn").addEventListener("click", downloadJson);
+
+  // Expose for tests
+  window.__SURVEY__ = {
+    getConfig: function () { return CONFIG; },
+    getAnswers: function () { return answers; },
+    setAnswers: function (a) { answers = a; },
+    buildPayload: buildPayload,
+    buildCompactBody: buildCompactBody,
+    goTo: function (i) { idx = i; renderQuestion(); },
+    showSummary: showSummary,
+    validateCurrent: validateCurrent,
+    questionCount: function () { return qs.length; }
+  };
+
+  applyBrand();
+  if (!qs.length) {
+    $("qLabel").textContent = "No questions configured";
+    $("qHelp").textContent = "Edit the JSON in #survey-config.";
+  } else {
+    renderQuestion();
+  }
+})();
+</script>
+</body>
+</html>

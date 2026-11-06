@@ -611,7 +611,7 @@
     if (CONFIG.returnEmail) {
       note = "Submit opens a prefilled email to " + CONFIG.returnEmail +
         " with subject SURVEY " + CONFIG.clientSlug +
-        ". Copy and Download always work offline.";
+        " (compact answers). Full JSON also downloads/copies.";
     } else {
       note = "No return email is configured yet. Submit will download the JSON and copy it to your clipboard. Set returnEmail in the survey config when Producer Bot Builder's inbox is on.";
     }
@@ -912,6 +912,75 @@
       .replace(/"/g, "&quot;");
   }
 
+
+  // Abbreviated keys for compact mailto bodies (keep full answers as values).
+  var KEY_ABBREV = {
+    display_name: "dn",
+    show_name: "sn",
+    email: "em",
+    email_ok: "eok",
+    city_region: "city",
+    timezone: "tz",
+    record_where: "rec",
+    software: "soft",
+    live_or_recorded: "lor",
+    camera: "cam",
+    capture_notes: "cap",
+    audio: "aud",
+    lighting: "lit",
+    os: "os",
+    machine_power: "mp",
+    platforms: "plat",
+    cadence: "cad",
+    team: "team",
+    time_sinks: "sink",
+    graphics: "gfx",
+    guests: "gst",
+    jobs_rank: "jobs",
+    budget: "bud",
+    timeline: "tl",
+    sponsors_cta: "cta",
+    want_bot: "want"
+  };
+
+  function formatCompactValue(v) {
+    if (v == null || v === "") return "";
+    if (Array.isArray(v)) {
+      return v.map(function (x) { return String(x).replace(/\|/g, "/").replace(/\n/g, " "); }).join(" | ");
+    }
+    return String(v).replace(/\r?\n/g, " ").trim();
+  }
+
+  function buildCompactBody() {
+    var lines = [];
+    lines.push("v=1");
+    lines.push("slug=" + (CONFIG.clientSlug || ""));
+    if (CONFIG.clientName) lines.push("name=" + CONFIG.clientName);
+    qs.forEach(function (q) {
+      var val = answers[q.id];
+      if (val == null || val === "" || (Array.isArray(val) && !val.length)) return;
+      var key = KEY_ABBREV[q.id] || q.id;
+      lines.push(key + "=" + formatCompactValue(val));
+    });
+    var body = lines.join("\n");
+    // Soft cap ~1500 chars for mailto body (many clients truncate around here).
+    if (body.length > 1500) {
+      var kept = [];
+      var n = 0;
+      for (var i = 0; i < lines.length; i++) {
+        var next = n ? n + 1 + lines[i].length : lines[i].length;
+        if (next > 1480 && i > 2) {
+          kept.push("_trunc=1");
+          break;
+        }
+        kept.push(lines[i]);
+        n = next;
+      }
+      body = kept.join("\n");
+    }
+    return body;
+  }
+
   function buildPayload() {
     var ordered = [];
     qs.forEach(function (q) {
@@ -983,28 +1052,19 @@
 
   function submit() {
     var text = payloadText();
-    // Always persist locally first (works with no server).
+    // Always persist full JSON locally (download + clipboard).
     downloadJson();
     copyAnswers();
 
     if (CONFIG.returnEmail) {
       var subject = "SURVEY " + CONFIG.clientSlug;
-      var body = text;
-      // mailto length limits vary; keep body, browser may truncate long ones.
+      // Compact key=value body stays under mailto limits; full JSON is on clipboard/download.
+      var body = buildCompactBody();
       var url = "mailto:" + encodeURIComponent(CONFIG.returnEmail).replace(/%40/g, "@") +
         "?subject=" + encodeURIComponent(subject) +
         "&body=" + encodeURIComponent(body);
-      if (url.length > 1800) {
-        // Too long for many mail clients — mail a short pointer; JSON already downloaded/copied.
-        var shortBody =
-          "Survey answers for " + CONFIG.clientSlug +
-          " are attached via download/clipboard (JSON too long for mailto).\n\n" +
-          "Paste the JSON below or attach SURVEY_" + CONFIG.clientSlug + ".json\n\n" +
-          text.slice(0, 1200) + "\n…[truncated — full JSON on clipboard/download]";
-        url = "mailto:" + CONFIG.returnEmail +
-          "?subject=" + encodeURIComponent(subject) +
-          "&body=" + encodeURIComponent(shortBody);
-      }
+      // Expose for length tests
+      window.__SURVEY_LAST_MAILTO__ = { url: url, body: body, bodyLen: body.length, urlLen: url.length };
       window.location.href = url;
       toast("Opening email…");
     } else {
@@ -1025,6 +1085,7 @@
     getAnswers: function () { return answers; },
     setAnswers: function (a) { answers = a; },
     buildPayload: buildPayload,
+    buildCompactBody: buildCompactBody,
     goTo: function (i) { idx = i; renderQuestion(); },
     showSummary: showSummary,
     validateCurrent: validateCurrent,
